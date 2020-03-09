@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { UserConsumer, UserContext } from "./userContext";
 
 class AddItem extends Component {
   state = {
@@ -11,17 +12,17 @@ class AddItem extends Component {
 
   AddItem = () => {
     if (this.state.value) {
-      this.props.addToShowcase(this.state.value);
+      this.context.addToShowcase(this.state.value);
       this.setState({ value: "" });
     }
   };
 
   render() {
     return (
-      <div className="d-flax my-3">
+      <div className="d-flex my-3">
         <input
           type="text"
-          className="form-control my-2"
+          className="form-control mr-2"
           value={this.state.value}
           onChange={this.handleChange}
         />
@@ -36,26 +37,36 @@ class AddItem extends Component {
   }
 }
 
-const ItemList = ({ items }) => {
+AddItem.contextType = UserContext;
+
+const ItemList = () => {
   return (
-    <ul className="list-group">
-      {items.map(lang => (
-        <li className="list-group-item" key={lang}>
-          {lang}
-        </li>
-      ))}
-    </ul>
+    <UserConsumer>
+      {({ user }) => (
+        <ul className="list-group">
+          {user.languages.map(lang => (
+            <li className="list-group-item" key={lang}>
+              {lang}
+            </li>
+          ))}
+        </ul>
+      )}
+    </UserConsumer>
   );
 };
 
 //main class
-function Showcase({ user, addToShowcase }) {
+function Showcase() {
   return (
-    <div>
-      <h3> {user.name}Showcase:</h3>
-      <AddItem addToShowcase={addToShowcase} />
-      <ItemList items={user.languages} />
-    </div>
+    <UserConsumer>
+      {({ user }) => (
+        <div>
+          <h3> {user.name + " "}Showcase:</h3>
+          <AddItem />
+          <ItemList />
+        </div>
+      )}
+    </UserConsumer>
   );
 }
 export default Showcase;
